@@ -1,0 +1,262 @@
+<html>
+	<head> <title> Lurk Protocol </title> </head>
+	<body> <h2>Lurk Protocol, version 2.2 </h2>
+
+	The Lurk protocol is intended to support text-based MMORPG-style games, also known as MUDs (Multi-User Dimension).  It consists of 13 types of message, some of which are primarily sent by servers and some by clients.  Behavior and game rules are primarily defined by the server, and clients should expect that their character may be updated with different health, location, and wealth at any time.  The server is responsible for all computation related to game rules, results of battles, or collecting gold.  The client is responsible for communicating with the server and interacting with the player.<br>
+
+	The lurk protocol does not specifically contain support for increasing the experience of players.  However, the server can allow players to increase their stats.  For example, a server could allow an initial stat total of 150, but then for each 1,000 gold collected, increase the player's stats.  This behavior is not required, but would allow gold to take on a role more like XP. <br>
+
+	<h3> Protocol Messages </h3>
+
+	All protocol message begin with an 8-bit type, followed by 0 or more bytes of further information.  The amount of bytes to be read can be determined by the type, and in some cases a message length field further into the message.  Messages are listed below by type.  Notes:<br>
+	<ul>
+		<li> Variable-length text fields are sent without a null terminator.  </li>
+		<li> All numbers are sent little-endian.  This makes things easy for x86 users at the expense of being unusual.</li>
+		<li> Except as noted (health), all integer fields are unsigned. </li>
+	</ul>
+			
+	<h4> MESSAGE </h4>
+			
+			 Sent by the client to message other players.  Can also be used by the server to send "presentable" information to the client (information that can be displayed to the user with no further processing).  Clients should expect to receive this type of message at any time, and servers should expect to relay messages for clients at any time.  If using this to send game information, the server can use the name of an NPC or some such, and should expect that the client will just display the message to the user and not attempt to parse it.<br>
+
+			 <table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 1 </td></tr>
+				 <tr><td>1-2</td><td>Message Length, 16 bits unsigned.</td></tr>
+				 <tr><td>3-34</td><td>Recipient Name, 32 bytes total.</td></tr>
+				 <tr><td>35-66</td><td>Sender Name, 32 bytes total.</td></tr>
+				 <tr><td>67+</td><td>Message.  Length was specified earlier.</td></tr>
+			 </table>		 
+	 
+	 <h4> CHANGEROOM </h4>
+
+	 		Sent by the client only, to change rooms.  If the server changes the room a client is in, it should send an updated room, character, and connection message(s) to explain the new location.  If not, for example because the client is not ready to start or specified an inappropriate choice, and error should be sent.<br>
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 2</td></tr>
+				 <tr><td>1-2</td><td>Number of the room to change to.  The server will send an error if an inappropriate choice is made.</td></tr>
+			</table>
+
+	<h4> FIGHT </h4>
+
+			Initiate a fight against monsters.  This will start a fight in the current room against the monsters which are presently in the room.  Players with the join battle flag set, who are in the same room, will automatically join in the fight.  The server will allocate damage and rewards after the battle, and inform clients appropriately.  Clients should expect a slew of messages after starting a fight, especially in a crowded room.  This message is sent by the client.  If a fight should ensue in the room the player is in, the server should notify the client, but not by use of this message.  Instead, the players not initiating the fight should receive an updated CHARACTER message for each entity in the room.  If the server wishes to send additional narrative text, this can be sent as a MESSAGE.  Note that this is not the only way a fight against monsters can be initiated.  The server can initiate a fight at any time.<br>
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 3</td></tr>
+			</table>
+
+	<h4> PVPFIGHT </h4>
+
+			Initiate a fight against another player.  The server will determine the results of the fight, and allocate damage and rewards appropriately.  The server may include players with join battle in the fight, on either side.  Monsters may or may not be involved in the fight as well.  This message is sent by the client.  If the server does not support PVP, it should send error 8 to the client.<br>
+
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 4</td></tr>
+				 <tr><td>1-32</td><td>Name of target player</td></tr>
+			</table>
+
+	<h4> LOOT </h4>
+
+			Loot gold from a dead player or monster.  The server may automatically gift gold from dead monsters to the players who have killed them, or wait for a LOOT message.  The server is responsible for communicating the results of the LOOT to the player, by sending an updated CHARACTER message.  This message is sent by the client.
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 5</td></tr>
+				 <tr><td>1-32</td><td>Name of target player</td></tr>
+			</table>
+	<h4> START </h4>
+
+			Start playing the game.  A client will send a CHARACTER message to the server to explain character stats, which the server may either accept or deny (by use of an ERROR message).  If the stats are accepted, the server will not enter the player into the game world until it has received START.  This is sent by the client.  Generally, the server will reply with a ROOM, a CHARACTER message showing the updated room, and a CHARACTER message for each player in the initial room of the game.
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 6</td></tr>
+			</table>
+
+	<h4> ERROR </h4>
+
+			Notify the client of an error.  This is used to indicate stat violations, inappropriate room connections, attempts to loot nonexistent or living players, attempts to attack players or monsters in different rooms, etc.
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 7</td></tr>
+				 <tr><td>1</td><td>Error code.  List is given below.</td></tr>
+				 <tr><td>2-3</td><td>Error message length.</td></tr>
+				 <tr><td>4+</td><td>Actual error message, of the specified length.</td></tr>
+			</table>
+
+			Error codes:
+
+			<table>
+				 <tr><th>Code</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Other (not covered by any below error code)</td></tr>
+				 <tr><td>1</td><td>Bad room.  Attempt to change to an inappropriate room</td></tr>
+				 <tr><td>2</td><td>Player Exists.  Attempt to create a player that already exists.</td></tr>
+				 <tr><td>3</td><td>Bad Monster.  Attempt to loot a nonexistent or not present monster.</td></tr>
+				 <tr><td>4</td><td>Stat error.  Caused by setting inappropriate player stats.</td></tr>
+				 <tr><td>5</td><td>Not Ready.  Caused by attempting an action too early, for example changing rooms before sending START or CHARACTER.</td></tr>
+				 <tr><td>6</td><td>No target.  Sent in response to attempts to loot nonexistent players, fight players in different rooms, etc.</td></tr>
+				 <tr><td>7</td><td>No fight.  Sent if the requested fight cannot happen for other reasons (i.e. no live monsters in room)</td></tr>
+				 <tr><td>8</td><td>No player vs. player combat on the server.  Servers do not have to support player-vs-player combat.</td></tr>
+			</table>
+
+	<h4> ACCEPT </h4>
+
+		Sent by the server to acknowledge a non-error-causing action which has no other direct result.  This is not needed for actions which cause other results, such as changing rooms or beginning a fight.  It should be sent in response to clients sending messages, setting character stats, etc. <br>
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 8</td></tr>
+				 <tr><td>1</td><td>Type of action accepted.</td></tr>
+			</table>
+	
+	<h4> ROOM </h4>
+
+	Sent by the server to describe the room that the player is in.  This should be an expected response to CHANGEROOM or START.  Can be re-sent at any time, for example if the player is teleported or falls through a floor.  Outgoing connections will be specified with a series of CONNECTION messages.  Monsters and players in the room should be listed using a series of CHARACTER messages.<br>
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 9</td></tr>
+				 <tr><td>1-2</td><td>Room number.  This is the same room number used for CHANGEROOM</td></tr>
+				 <tr><td>3-34</td><td>Room name, 32 bytes in length</td></tr>
+				 <tr><td>35-36</td><td>Room description length</td></tr>
+				 <tr><td>37+</td><td>Room description.  This can be shown to the player.</td></tr>
+			</table>
+	
+	<h4> CHARACTER </h4>
+
+
+	Sent by both the client and the server.  The server will send this message to show the client changes to their player's status, such as in health or gold.  The server will also use this message to show other players or monsters in the room the player is in or elsewhere.  The client should expect to receive character messages at any time, which may be updates to the player or others.  If the player is in a room with another player, and the other player leaves, a CHARACTER message should be sent to indicate this.  In many cases, the appropriate room for the outgoing player is the room they have gone to.  If the player goes to an unknown room, the room number may be set to a room that the player will not encounter (does not have to be part of the map).  This could be accompanied by a narrative message (for example, "Glorfindel vanishes into a puff of smoke"), but this is not required.<br>
+	The client will use this message to set the name, description, attack, defense, regen, and flags when the character is created.  It can also be used to reprise an abandoned or deceased character.<br>
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 10</td></tr>
+				 <tr><td>1-32</td><td>Name of the player</td></tr>
+				 <tr><td>33</td><td>Flags: Starting from the highest bit, Alive, Join Battle, Monster, Started, Ready.  The lowest three are reserved for future use.</td></tr>
+				 <tr><td>34-35</td><td>Attack</td></tr>
+				 <tr><td>36-37</td><td>Defense</td></tr>
+				 <tr><td>38-39</td><td>Regen</td></tr>
+				 <tr><td>40-41</td><td>Health (signed)</td></tr>
+				 <tr><td>42-43</td><td>Gold</td></tr>
+				 <tr><td>44-45</td><td>Current room number (may be unknown to the player)</td></tr>
+				 <tr><td>46-47</td><td>Description length</td></tr>
+				 <tr><td>48+</td><td>Player description</td></tr>
+			</table>
+
+Meaning of flags:
+			<table>
+				 <tr><th>Flag</th><th>Meaning</th></tr>
+				 <tr><td>Alive</td><td>Character is alive (1 = alive, 0 = not alive)</td></tr>
+				 <tr><td>Join Battle</td><td>Character will automatically join battles in the room they are in (1 = join battles, 0 = do not join battles)</td></tr>
+				 <tr><td>Monster</td><td>Character is a monster (1 = monster, 0 = player)</td></tr>
+				 <tr><td>Started</td><td>Character has started the game (1 = started, 0 = not started</td></tr>
+				 <tr><td>Ready</td><td>Character is ready to start the game (1 = started, 0 = not started</td></tr>
+			</table>
+
+	When a client uses CHARACTER to describe a new player, the server may (should) ignore the client's initial specification for health, gold, and room.  The monster flag is used when describing monsters found in the game rather than other human players.
+
+	<h4> GAME </h4>
+	
+	Used by the server to describe the game.  The initial points is a combination of health, defense, and regen, and cannot be exceeded by the client when defining a new character.  The stat limit is a hard limit for the combination for any player on the server regardless of experience.  If unused, it should be set to 65535, the limit of the unsigned 16-bit integer.  This message will be sent upon connecting to the server, and not re-sent.
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 11</td></tr>
+				 <tr><td>1-2</td><td>Initial Points</td></tr>
+				 <tr><td>3-4</td><td>Stat limit</td></tr>
+				 <tr><td>5-6</td><td>Description Length</td></tr>
+				 <tr><td>7+</td><td>Game description </td></tr>
+			</table>
+	
+	<h4> LEAVE </h4>
+
+	Used by the client to leave the game.  This is a graceful way to disconnect.  The server never terminates, so it doesn't send LEAVE.
+			
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 12</td></tr>
+			</table>
+
+	<h4> CONNECTION </h4>
+
+		Used by the server to describe rooms connected to the room the player is in.  The client should expect a series of these when changing rooms, but they may be sent at any time.  For example, after a fight, a secret staircase may extend out of the ceiling enabling another connection.  Note that the room description may be an abbreviated version of the description sent when a room is actually entered.  The server may also provide a different room description depending on which room the player is in.  So a description on the connection could read "A strange whirr is heard through the solid oak door", and the description attached to the message once the player has entered could read "Servers line the walls, softly lighting the room in a cacophony of red, green, blue, and yellow flashes".  
+
+			<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 13</td></tr>
+				 <tr><td>1-2</td><td>Room number.  This is the same room number used for CHANGEROOM</td></tr>
+				 <tr><td>3-34</td><td>Room name, 32 bytes in length</td></tr>
+				 <tr><td>35-36</td><td>Room description length</td></tr>
+				 <tr><td>37+</td><td>Room description.  This can be shown to the player.</td></tr>
+			</table>
+
+	<h4> VERSION </h4>
+
+		Sent by the server upon initial connection along with GAME.  If no VERSION is received, the server can be assumed to support only LURK 2.0 or 2.1.  
+
+		<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0</td><td>Type, 14</td></tr>
+				 <tr><td>1</td><td>LURK major revision, as an 8-bit unsigned int</td></tr>
+				 <tr><td>2</td><td>LURK minor revision, as an 8-bit unsigned int</td></tr>
+				 <tr><td>3-4</td><td>Size of the list of extensions, in bytes.</td></tr>
+				 <tr><td>5+</td><td>List of extensions.</td></tr>
+		</table>
+
+		The list of extensions is formatted like this:
+
+		<table>
+				 <tr><th>Byte</th><th>Meaning</th></tr>
+				 <tr><td>0-1</td><td>Length of the first extension, as an unsigned 16-bit integer.</td></tr>
+				 <tr><td>2+</td><td>First extension</td></tr>
+		</table>
+
+		At the end of the first extension, if there are more extensions, the length of the second extension will be found, then the second extension, and so on.  The length of the list of extensions must be the same as stated in the "size of the list of extensions" above.  Note that servers and clients are not required to support any extensions at all, and in this case are free to ignore the list.  If no extensions are to be sent, the size of the list of extensions is 0.  Clients are not required to send this message to the server unless they wish to notify the server that they support extensions.  If no extensions are supported, clients can ignore the list of extensions by ignoring the number of bytes specified in the size of the list of extensions.  In order to use an extension, the client must send the server a VERSION message indicating the version and list of extensions the client intends to use, which must be selected from the extensions the server offered when the initial connection was made.
+
+
+	<h3>Fight Calculations </h3>
+
+	Consider the following player and monster:
+
+	<pre>
+Name:  Trudy
+Description: Black Hat Security Expert
+Gold: 10
+Attack: 60
+Defense: 30
+Regen: 10
+Status: ALIVE
+Location: Broom Closet
+Health: 100
+Started:  YES
+
+Name:  Glog
+Description: A slimy and toothy character
+Gold: 50
+Attack: 20
+Defense: 30
+Regen: 100
+Monster
+Health: 100
+</pre>
+
+Trudy may or may not be able to defeat this monster, depending on the way the server calculates fight results.  Suppose for example that in fighting each sustains the attack of the other in damage, minus the defense.  In this case, Trudy receives no damage at all (20 attack from Glog, minus Trudy's 30 defense, leaves no damage).  Glog receives 30 damage (60 attack from Trudy, minus 30 defense from Glog).  However, Glog has a very high regen of 100.  If the server allocates 10\% of the regen to health per turn, than Glog will receive a 10 point health increase, and Trudy will receive only 1 point increase.  Still, in a few turns, Trudy defeats Glog.  If, on the other hand, the server were to allocate 30\% of regen as gained health each turn, neither would defeat the other. <br>
+The exact method of calculation is a game design decision made at the server level.  Clients should not attempt to calculate damage themselves, but expect to receive a CHARACTER message after each fight their player is involved in.
+
+		<h3> Notes </h3>
+
+		<ul>
+			<li> Many aspects of the game are not controlled by the protocol, but by the way the server implements it.  For example, the result of a fight is determined by the server.  The regen stat is available for the server to use, but its use is not required.  Connections between rooms do not have to be bidirectional.  Monsters do not have to remain in a single room, but can move around and enter the room the player is in (CHARACTER should be sent in this case).  Monsters can attack the player, or ignore the player until attacked themselves.  Each server can manage a very different game.</li>
+			<li> Clients must listen for input both from the user and from the server.  </li>
+			<li> The user should not be expected to remember everything the server has presented. </li>
+			<li> Entering a room will cause a number of messages, which should include a ROOM message to describe the room the player has entered, and a CHARACTER message for each entity in the room.</li>
+			<li> Initially, the client will connect to the server, and receive a GAME message.  Then, the client is expected to send a CHARACTER message describing their own player.  The server will send either an ERROR, or a CHARACTER message indicating the accepted player.  If the client receives a CHARACTER message for their own player, with the ready flag set, then a START message should begin the game.</li>
+			<li> If the player is in a room with another player or monster, and the other player or monster leaves the room, the server should send a CHARACTER message indicating that the other player or monster has left the room.  This behavior was omitted on previous LURK protocol versions, and as such, legacy servers might not send this message, and legacy clients may not expect it..</li>
+		</ul>
+
+
+	</body>
+</html>

@@ -1,0 +1,45 @@
+<html>
+	<head> <title> CS435 Lurk Project </title></head>
+
+	<body>
+
+		<h3> CS435 Class Project </h3>
+		<h3> Client due Wednesday, March 10, at 9:00 AM (Class Time) </h3>
+		<h3> Server must pass basic tests by Wednesday, April 7, at 10:30 </h3>
+		<h3> Server will be presented during the week of May 3, or possibly during the final exam time if presentations take a long time. </h3> 
+		<h3> Final server with all bugs fixed due Friday, May 12, at 9:00 AM </h3>
+
+		Each student will create a client and a server.  These should be unique, and not share any source code, but be able to communicate with each other.  They can be written in any language, although the server must be able to run and Internet-accessible server such as isoptera.  There is no such requirement for the client, but if it doesn't run on my computer, I might ask you to demonstrate it. <br>
+
+		<h4>Client Requirements: </h4>
+		<ul>
+			<li> All information the user needs must be presented to them (i.e. health and status after battles, players entering the room they are in, messages, etc).  The user should not be expected to remember things like their own health, nearby monsters, etc.  So the client should track these things.  The player should not have to be aware of technical details such as the types of lurk messages or the bit order of the player flags.</li>
+			<li> If the user is required to type, incoming information must not disturb the typing </li>
+			<li> Client must support the full Lurk protocol.  Any server following that protocol should be able to communicate with your client.  You should be able to use your own client during in-class server testing to connect to any game server.</li>
+			<li> On the day clients are due, we will expore a server together as a class.  So your client should be ready for you to use. </li>
+		</ul>
+
+		<h4>Server Requirements: </h4>
+		<ul>
+			<li> Must support the full Lurk protocol.  All message must work as expected.  The only exceptions here are that pvp fights can be disallowed on the server (but appropriate error messages should be sent if these are attempted). </li>
+			<li> Must support multiple clients at once, which will interact with each other </li>
+			<li> Map must have at least 10 rooms </li>
+			<li> Map must contain at least 10 entities (these don't have to be allocated one per room).  These can be monsters, but don't have to be. </li>
+			<li> Server state must be persistent.  So if a player enters the game and dies, the body should remain visible to other players.  You can implement a cleanup mechanism that removes dead players after a fixed (or random) period. </li>
+
+		</ul>
+
+	The server must pass a basic LURK protocol test April 16.  This will be a script which can be run from isoptera, that will test each protocol message.  It may not be completely thorough, but will require the network communication on the server to be largely complete.  Server presentation will be in-class, and we will play each game as a class.  The final version of the server is due on May 3, so that bugs discovered during the in-class presentation can be fixed.
+
+	<h4>Server grade items: </h4>
+<ul>
+	<li> 30 points:  Passes basic tests (graded April 13) </li>
+	<li> 20 points:  Meets map and entity requirements, graded at in-class demo.  Must be ready by April 27.  </li>
+	<li> 40 points:  Allows the class to play your game during in-class testing.  This means it can't crash or otherwise fail to perform when everyone in the class is connected and playing the game together at the same time.  Must be ready by April 27. </li>
+	<li> 10 points:  Any bugs discovered during in-class testing are fixed (graded May 8). </li>
+</ul>
+
+
+
+	</body>
+</html>

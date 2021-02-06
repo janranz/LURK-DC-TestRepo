@@ -113,6 +113,11 @@ Lurk Protocol Version 2.2
     2. **ACCEPT** (TYPE: 8) OR **ERROR** (TYPE: 7) \[*server*\]
     3. **CHARACTER** (TYPE: 10) \[*server*\]
 
+* **Upon player fighting monster**:
+    1. **FIGHT** (TYPE: 3) \[*client*\]
+    2. **ACCEPT** (TYPE: 8) OR **ERROR** (TYPE: 7) \[*server*\]
+    3. **CHARACTER** (TYPE: 10) \[*server*\]
+
 ### Server-Features:
 
 * **Global Chat Support**

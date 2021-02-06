@@ -82,16 +82,17 @@ Lurk Protocol Version 2.2
 5. **CONNECTION** (TYPE: 13)
 6. **VERSION** (TYPE: 14)
 
-### Guaranteed-Order-of-Operations:
+### Guaranteed-Order-of-Operations (See to accept after every server-to-client transaction!):
 * **Upon initial connection to the server**:
     1. **VERSION** (TYPE: 14) \[*server*\]
     2. **GAME** (TYPE: 11) \[*server*\]
     3. **CHARACTER** (TYPE: 10) \[*client*\]
     4. **ACCEPT** (TYPE: 8) OR **ERROR** (TYPE: 7) \[*server*\] | \[*server*\]
     5. **START** (TYPE: 6) \[*client*\]
-    6. **ROOM** (TYPE: 9) \[*server*\]
-    7. **CONNECTION** (TYPE: 13) \[*server*\]
-    8. **CHARACTER** (TYPE: 10) \[*server*\]
+    6. **ACCEPT** (TYPE: 8) OR **ERROR** (TYPE: 7) \[*server*\] | \[*server*\]
+    7. **ROOM** (TYPE: 9) \[*server*\]
+    8. **CONNECTION** (TYPE: 13) \[*server*\]
+    9. **CHARACTER** (TYPE: 10) \[*server*\]
 
 * **Upon player changing a room**:
     1. **CHANGEROOM** (TYPE: 2) \[*client*\]

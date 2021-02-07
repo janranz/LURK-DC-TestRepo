@@ -1,16 +1,5 @@
-#include<iostream>
-#include<stdio.h>
-#include<stdlib.h>
-#include<netdb.h>
-#include<sys/socket.h>
-#include<sys/types.h>
-#include<netinet/ip.h>
-#include<arpa/inet.h>
-#include<pthread.h>
-#include<unistd.h>
-#include<string.h>
-#include"headers/sktstructs.h"
-#include"headers/helperfunc.h"
+#include "headers/helperfunc.h"
+
 
 using namespace std;
 
@@ -19,6 +8,7 @@ int main(int argc, char** argv)
     if(argc != 3)
     {
         printf("Invalid number of arguments. Run: %s HOST PORT\n",argv[0]);
+        return 1;
     }
     // build server address struct
     struct sockaddr_in sd;
@@ -66,7 +56,13 @@ int main(int argc, char** argv)
         printf("Failed to connect to: %s\n... sorry about your luck.\n",ip_string);
         return 1;
     }
-    // establish a read thread.
+
+    socketInfo sockPack;
+    sockPack.sktFd = sktFD;
+
+    thread reader (readerThread,sockPack);
+    reader.join();
+
 
     return 0;
 }

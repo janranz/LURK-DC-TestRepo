@@ -15,5 +15,13 @@
 
 #define BUFSIZE 1024*1024
 
-void readerThread(socketInfo p);
-void processIncoming(int b);
+void readerThread(socketInfo);
+void processIncoming(socketInfo,uint8_t);
+void pmIn(socketInfo);
+void errIn(socketInfo);
+void acptIn(socketInfo);
+void rmIn(socketInfo);
+void charIn(socketInfo);
+void gameIn(socketInfo);
+void cnctIn(socketInfo);
+void versIn(socketInfo);

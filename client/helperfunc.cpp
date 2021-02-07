@@ -34,35 +34,35 @@ void processIncoming(socketInfo sk, uint8_t p)
     {
         case 1:
         // pmIn
-            pmIn(sk);
+            pmIn(sk,p);
             break;
         case 7:
         // errIn
-            errIn(sk);
+            errIn(sk,p);
             break;
         case 8:
         // acptIn
-            acptIn(sk);
+            acptIn(sk,p);
             break;
         case 9:
         // rmIn
-            rmIn(sk);
+            rmIn(sk,p);
             break;
         case 10:
         // charIn
-            charIn(sk);
+            charIn(sk,p);
             break;
         case 11:
         // gameIn
-            gameIn(sk);
+            gameIn(sk,p);
             break;
         case 13:
         // cnctIn
-            cnctIn(sk);
+            cnctIn(sk,p);
             break;
         case 14:
         // VersIn
-            versIn(sk);
+            versIn(sk,p);
             break;
         default:
             // bad byte recv ... return
@@ -70,41 +70,47 @@ void processIncoming(socketInfo sk, uint8_t p)
     }
 }
 
-void pmIn(socketInfo sk)
+void pmIn(socketInfo sk, uint8_t p)
 {
     printf("pmIn\n");
 }
-void errIn(socketInfo sk)
+void errIn(socketInfo sk, uint8_t p)
 {
     printf("errIn\n");
 }
-void acptIn(socketInfo sk)
+void acptIn(socketInfo sk, uint8_t p)
 {
     printf("acptIn\n");
 }
-void rmIn(socketInfo sk)
+void rmIn(socketInfo sk, uint8_t p)
 {
     printf("rmIn\n");
 }
-void charIn(socketInfo sk)
+void charIn(socketInfo sk, uint8_t p)
 {
     printf("charIn\n");
 }
-void gameIn(socketInfo sk)
+void gameIn(socketInfo sk, uint8_t p)
 {
-    printf("gameIn\n");
+    gameInfo gi;
+    recv(sk.sktFd,&gi,sizeof(gi),MSG_WAITALL);
+    char description[gi.gameDescLen + 1];
+    recv(sk.sktFd, description,gi.gameDescLen, MSG_WAITALL);
+    description[gi.gameDescLen] = 0;
+    printf("TYPE: %dINITIAL POINTS: %d\nSTAT LIMIT: %d\nDESCRIPTION: %s\n",p,gi.initPoints,gi.statLimit,description);
 }
-void cnctIn(socketInfo sk)
+void cnctIn(socketInfo sk, uint8_t p)
 {
     printf("cnctIn\n");
 }
-void versIn(socketInfo sk)
+void versIn(socketInfo sk, uint8_t p)
 {
     versionInfo vi;
-    int bytes = recv(sk.sktFd,&vi,sizeof(vi),MSG_WAITALL);
+    recv(sk.sktFd,&vi,sizeof(vi),MSG_WAITALL);
     char description[vi.extenListSize + 1];
     recv(sk.sktFd, description, vi.extenListSize, MSG_WAITALL);
     description[vi.extenListSize] = 0;
+
     printf("TYPE: %d\nLURK VERSION: %d.%d\nEXTENSION LIST SIZE: %d\n"
-        ,vi.pType,vi.lurkMajorRev,vi.lurkMinorRev,vi.extenListSize);
+        ,p,vi.lurkMajorRev,vi.lurkMinorRev,vi.extenListSize);
 }

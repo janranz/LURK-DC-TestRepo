@@ -17,11 +17,11 @@
 
 void readerThread(socketInfo);
 void processIncoming(socketInfo,uint8_t);
-void pmIn(socketInfo);
-void errIn(socketInfo);
-void acptIn(socketInfo);
-void rmIn(socketInfo);
-void charIn(socketInfo);
-void gameIn(socketInfo);
-void cnctIn(socketInfo);
-void versIn(socketInfo);
+void pmIn(socketInfo,uint8_t);
+void errIn(socketInfo,uint8_t);
+void acptIn(socketInfo,uint8_t);
+void rmIn(socketInfo,uint8_t);
+void charIn(socketInfo,uint8_t);
+void gameIn(socketInfo,uint8_t);
+void cnctIn(socketInfo,uint8_t);
+void versIn(socketInfo,uint8_t);

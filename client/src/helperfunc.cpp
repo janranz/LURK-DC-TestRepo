@@ -3,7 +3,6 @@
 #include<sys/types.h>
 #include<vector>
 
-
 using namespace std;
 
 void readerThread(socketInfo sk)

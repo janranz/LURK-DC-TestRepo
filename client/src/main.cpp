@@ -61,7 +61,9 @@ int main(int argc, char** argv)
     sockPack.sktFd = sktFD;
 
     thread reader (readerThread,sockPack);
+    thread sender (senderThread,sockPack);
     reader.join();
+    sender.join();
 
 
     return 0;

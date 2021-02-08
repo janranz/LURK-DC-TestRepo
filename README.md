@@ -138,3 +138,4 @@ Lurk Protocol Version 2.2
 * Blocking/nonblocking functions
 * Race conditions
 * Thread safety / mutual exclusion
+* SIGs (SIGPIPE)

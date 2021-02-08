@@ -114,3 +114,10 @@ void versIn(socketInfo sk, uint8_t p)
     printf("TYPE: %d\nLURK VERSION: %d.%d\nEXTENSION LIST SIZE: %d\n"
         ,p,vi.lurkMajorRev,vi.lurkMinorRev,vi.extenListSize);
 }
+
+void senderThread(socketInfo)
+{
+    // G-O-OPS for init connection (character create).. Ask Seth about an initial mutex to block premature init write
+    
+    
+}

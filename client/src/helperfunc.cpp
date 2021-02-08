@@ -1,4 +1,4 @@
-#include"headers/helperfunc.h"
+#include"include/helperfunc.h"
 #include<sys/socket.h>
 #include<sys/types.h>
 #include<vector>
@@ -117,7 +117,7 @@ void versIn(socketInfo sk, uint8_t p)
 
 void senderThread(socketInfo)
 {
-    // G-O-OPS for init connection (character create).. Ask Seth about an initial mutex to block premature init write
+    // G-O-OPS for init connection (character create).. handle SIGPIPE
     
     
 }

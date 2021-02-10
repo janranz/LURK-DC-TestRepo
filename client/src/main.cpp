@@ -1,5 +1,14 @@
-#include "headers/helperfunc.h"
-
+#include "include/helperfunc.h"
+#include<stdio.h>
+#include<iostream>
+#include<stdlib.h>
+#include<netdb.h>
+#include<netinet/ip.h>
+#include<arpa/inet.h>
+#include<thread>
+#include<unistd.h>
+#include<vector>
+#include<string>
 
 using namespace std;
 

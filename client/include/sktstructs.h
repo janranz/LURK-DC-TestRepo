@@ -1,5 +1,6 @@
 #pragma once
-#include<cstdint>
+
+#include<string>
 
 struct socketInfo
 {
@@ -8,9 +9,9 @@ struct socketInfo
 
 struct dialogue
 {
-    const string greet = "\n...Welcome to DubClient...\nBuild your Character.\n";
-    const string n = "Name: ";
-    const string j = "Automatically join battles? (y/n): ";
+    const std::string greet = "\n...Welcome to DubClient...\nBuild your Character.\n";
+    const std::string n = "Name: ";
+    const std::string j = "Automatically join battles? (y/n): ";
     // const string 
 
     // common use
@@ -19,14 +20,10 @@ struct dialogue
         "\nYou have made an error in judgement. I will ask you again...\n",
         "\nOkay now I think you're doing it on purpose. Let's try this again...\n",
         "\nWe should be out there pushing forth the crusade, but you would rather fumble over foolish inputs.\nLet's give it another shot...\n",
-        "\nYour foolish error was understandable and probably justified,\nbut it was a lapse of judgement to send it to me before consulting the dialogue.\nLet's try again...",
+        "\nYour foolish error was understandable and probably justified,\nbut it was a lapse of judgement to send it to me before consulting the dialogue.\nLet's try again..."
 
-    }
-    // const string err1 = "\nYou have made an error in judgement. I will ask you again...\n";
-    // const string err2 = "\nOkay now I think you're doing it on purpose. Let's try this again...\n";
-    // const string err3 = "\nWe should be out there pushing forth the crusade, but you would rather fumble over foolish inputs.\nLet's give it another shot...\n";
-
-}
+    };
+};
 
 //PROTOCOL STRUCTS (no longer storing type - redundant)
 struct pmInfo

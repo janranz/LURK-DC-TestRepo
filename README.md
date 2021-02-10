@@ -140,4 +140,4 @@ Lurk Protocol Version 2.2
 * Thread safety / mutual exclusion
 * SIGs (SIGPIPE)
 * Recall fight idea (health threshold from class.
-
+* Track (own) user in separate struct

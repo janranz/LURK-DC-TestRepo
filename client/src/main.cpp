@@ -1,5 +1,14 @@
-#include "headers/helperfunc.h"
-
+#include "include/helperfunc.h"
+#include<stdio.h>
+#include<iostream>
+#include<stdlib.h>
+#include<netdb.h>
+#include<netinet/ip.h>
+#include<arpa/inet.h>
+#include<thread>
+#include<unistd.h>
+#include<vector>
+#include<string>
 
 using namespace std;
 
@@ -61,7 +70,9 @@ int main(int argc, char** argv)
     sockPack.sktFd = sktFD;
 
     thread reader (readerThread,sockPack);
+    thread sender (senderThread,sockPack);
     reader.join();
+    sender.join();
 
 
     return 0;

@@ -1,8 +1,8 @@
-#include"headers/helperfunc.h"
+#include"include/helperfunc.h"
 #include<sys/socket.h>
 #include<sys/types.h>
 #include<vector>
-
+#include<stdio.h>
 
 using namespace std;
 
@@ -113,4 +113,11 @@ void versIn(socketInfo sk, uint8_t p)
 
     printf("TYPE: %d\nLURK VERSION: %d.%d\nEXTENSION LIST SIZE: %d\n"
         ,p,vi.lurkMajorRev,vi.lurkMinorRev,vi.extenListSize);
+}
+
+void senderThread(socketInfo)
+{
+    // G-O-OPS for init connection (character create).. handle SIGPIPE
+    
+    
 }
